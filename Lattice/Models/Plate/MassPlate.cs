@@ -57,6 +57,7 @@ namespace Lattice.Models.Plate
             this.IsCalcing = true;
 
             var sw = new Stopwatch();
+            bool isWaiting = false;
 
             while (this.IsCalcing)
             {
@@ -75,13 +76,22 @@ namespace Lattice.Models.Plate
                 // 他の節点の動きにつられて動く加速度を計算
                 this.TayunCalcForcedAcc();
 
+                // 前回の画面反映の終了を待ち合わせ
+                while (isWaiting) { }
+                isWaiting = true;
+
                 // 計算を座標に反映
                 this.TayunCalcPos();
 
-                this.PositionUpdated?.Invoke(this, new EventArgs());
+                // 画面反映。反映処理終了を待たず、次のフレームの計算を開始する
+                Task.Run(() =>
+                {
+                    this.PositionUpdated?.Invoke(this, new EventArgs());
+                }).ContinueWith((task) => isWaiting = false);
 
                 sw.Stop();
 
+                // 本来の時間から計算にかかった時間を引いて待機する
                 var waitTime = (int)(1000 * TimePerFrame) - (int)sw.ElapsedMilliseconds;
                 if (waitTime > 0)
                 {

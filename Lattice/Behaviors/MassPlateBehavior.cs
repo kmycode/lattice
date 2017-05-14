@@ -115,7 +115,21 @@ namespace Lattice.Behaviors
             this.Plate.PositionUpdated += this.Plate_PositionUpdated;
         }
 
-        private void Plate_PositionUpdated(object sender, EventArgs e)
+        private async void Plate_PositionUpdated(object sender, EventArgs e)
+        {
+            try
+            {
+                await this.Dispatcher.InvokeAsync(() =>
+                {
+                    this.UpdatePositions();
+                });
+            }
+            catch
+            {
+            }
+        }
+
+        private void UpdatePositions()
         {
             var dx = this.Plate.DivisionX - 1;
             var dy = this.Plate.DivisionY - 1;
