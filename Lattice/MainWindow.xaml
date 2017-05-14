@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:Lattice"
+        xmlns:vm="clr-namespace:Lattice.ViewModels"
+        xmlns:b="clr-namespace:Lattice.Behaviors"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    
     <Grid Background="Black">
         <Viewport3D ClipToBounds="False" x:Name="Viewport">
             <Viewport3D.Camera>
@@ -30,9 +34,23 @@
                     </Transform3DGroup>
                 </ModelVisual3D.Transform>
                 <ModelVisual3D.Content>
-                    <Model3DGroup x:Name="ViewportModels"/>
+                    <Model3DGroup>
+                        <GeometryModel3D>
+                            <i:Interaction.Behaviors>
+                                <b:MassPlateBehavior Plate="{Binding Plate}"/>
+                            </i:Interaction.Behaviors>
+                        </GeometryModel3D>
+                    </Model3DGroup>
                 </ModelVisual3D.Content>
             </ModelVisual3D>
+            <i:Interaction.Behaviors>
+                <b:ViewportClickedEventBehavior Helper="{Binding ClickHelper}"/>
+            </i:Interaction.Behaviors>
         </Viewport3D>
     </Grid>
+
+    <!--XAML作成途中にMassPlateBehaviorを呼び出すとエラーが出るので、Viewport3Dを作り終わってからPlateをバインドする-->
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
 </Window>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace Lattice.Models.Plate
 {
@@ -35,6 +36,11 @@ namespace Lattice.Models.Plate
         /// 物理演算中であるか
         /// </summary>
         public bool IsCalcing { get; private set; }
+
+        /// <summary>
+        /// 板に表示する画像
+        /// </summary>
+        public BitmapImage TextureImage { get; set; }
 
         public Action CalcAction { get; set; }
 
@@ -73,7 +79,7 @@ namespace Lattice.Models.Plate
                 // 計算を座標に反映
                 this.TayunCalcPos();
 
-                this.SimurationUpdated?.Invoke(this, new EventArgs());
+                this.PositionUpdated?.Invoke(this, new EventArgs());
                 
                 await Task.Delay((int)(1000 * TimePerFrame));
             }
@@ -90,7 +96,22 @@ namespace Lattice.Models.Plate
             this.IsCalcing = false;
         }
 
-        public event EventHandler SimurationUpdated;
+        /// <summary>
+        /// 各座標の移動やアニメーションなどをすべてクリアする
+        /// </summary>
+        public void Reset()
+        {
+            foreach (var item in this.Items)
+            {
+                item.Position = item.OriginalPosition;
+                item.Acceleration = new Point3D();
+                item.Amplitude = new Size3D();
+            }
+            this.TayunCalcCenterPos();
+            this.PositionUpdated?.Invoke(this, new EventArgs());
+        }
+
+        public event EventHandler PositionUpdated;
 
         #region TOY-CAKE! V2.03からの移植部分
 
@@ -115,9 +136,9 @@ namespace Lattice.Models.Plate
                             Y = this.SzMeshDist.H * y,
                             Z = 3 / 100.0,
                         },
-                        Mass = 3,
-                        Spring = 35,
-                        Decay = 0.5,
+                        Mass = 10,
+                        Spring = 90,
+                        Decay = 10,
                         ConstraintX = x == 0 || x == this.DivisionX - 1,
                         ConstraintY = y == 0 || y == this.DivisionY - 1,
                     };
@@ -265,6 +286,11 @@ namespace Lattice.Models.Plate
                 }
             }
 
+            this.TayunCalcCenterPos();
+        }
+
+        private void TayunCalcCenterPos()
+        {
             // 中間点の座標を求める
             for (var x = 0; x < this.DivisionX - 1; x++)
             {
