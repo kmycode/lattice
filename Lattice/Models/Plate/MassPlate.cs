@@ -212,7 +212,7 @@ namespace Lattice.Models.Plate
                             var forceZero = force; // / Math.Cos(omega * t); // 実質 1 なので計算不要
                             omegaZero = Math.Sqrt((rightNode.Spring + leftNode.Spring + upperNode.Spring + lowerNode.Spring) /
                                                   (rightNode.Mass + leftNode.Mass + upperNode.Mass + lowerNode.Mass) / 4 / 4);
-                            ft = (omegaZero * omegaZero - omega * omega + new Complex(roe * omega, 1)) * Complex.Pow(Math.E, new Complex(omega * t, 1));
+                            ft = (omegaZero * omegaZero - omega * omega + new Complex(0, roe * omega)) * Complex.Pow(Math.E, new Complex(0, omega * t));
 
                             var fx = forceZero / ft;
                             acc.X += fx.Real;
@@ -230,7 +230,7 @@ namespace Lattice.Models.Plate
                             {
                                 omegaZero = Math.Sqrt((rightNode.Spring + leftNode.Spring + upperNode.Spring + lowerNode.Spring) /
                                                       (rightNode.Mass + leftNode.Mass + upperNode.Mass + lowerNode.Mass) / 4 / 4);
-                                ft = (omegaZero * omegaZero - omega * omega + new Complex(roe * omega, 1)) * Complex.Pow(Math.E, new Complex(omega * t, 1));
+                                ft = (omegaZero * omegaZero - omega * omega + new Complex(0, roe * omega)) * Complex.Pow(Math.E, new Complex(0, omega * t));
                             }
 
                             var fy = forceZero / ft;
