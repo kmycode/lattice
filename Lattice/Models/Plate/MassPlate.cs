@@ -150,16 +150,18 @@ namespace Lattice.Models.Plate
                     var t = node.VibrationTime;
                     var phase = node.Phase;
 
+                    var pow_sin = Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t + phase);
+
                     // X方向加速度
                     var acc = node.Acceleration;
                     if (!node.ConstraintX)
                     {
-                        var fx = amp.W * Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t + phase);
+                        var fx = amp.W * pow_sin;
                         acc.X = fx / node.Mass;
                     }
                     if (!node.ConstraintY)
                     {
-                        var fy = amp.H * Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t + phase);
+                        var fy = amp.H * pow_sin;
                         acc.Y = fy / node.Mass;
                     }
                     node.Acceleration = acc;
@@ -195,6 +197,9 @@ namespace Lattice.Models.Plate
                     var roe = node.Roe;
                     var t = 0; // this.time;
 
+                    var omegaZero = Double.NaN;
+                    Complex ft = default(Complex);
+
                     // X方向加速度
                     var acc = node.Acceleration;
                     if (!node.ConstraintX)
@@ -205,10 +210,11 @@ namespace Lattice.Models.Plate
                         if (force != 0)
                         {
                             var forceZero = force; // / Math.Cos(omega * t); // 実質 1 なので計算不要
-                            var omegaZero = Math.Sqrt((rightNode.Spring + leftNode.Spring + upperNode.Spring + lowerNode.Spring) /
-                                                      (rightNode.Mass + leftNode.Mass + upperNode.Mass + lowerNode.Mass) / 4 / 4);
+                            omegaZero = Math.Sqrt((rightNode.Spring + leftNode.Spring + upperNode.Spring + lowerNode.Spring) /
+                                                  (rightNode.Mass + leftNode.Mass + upperNode.Mass + lowerNode.Mass) / 4 / 4);
+                            ft = (omegaZero * omegaZero - omega * omega + new Complex(roe * omega, 1)) * Complex.Pow(Math.E, new Complex(omega * t, 1));
 
-                            var fx = forceZero / (omegaZero * omegaZero - omega * omega + new Complex(roe * omega, 1)) * Complex.Pow(Math.E, new Complex(omega * t, 1));
+                            var fx = forceZero / ft;
                             acc.X += fx.Real;
                         }
                     }
@@ -220,10 +226,14 @@ namespace Lattice.Models.Plate
                         if (force != 0)
                         {
                             var forceZero = force; // / Math.Cos(omega * t); // 実質 1 なので計算不要
-                            var omegaZero = Math.Sqrt((rightNode.Spring + leftNode.Spring + upperNode.Spring + lowerNode.Spring) /
+                            if (Double.IsNaN(omegaZero))
+                            {
+                                omegaZero = Math.Sqrt((rightNode.Spring + leftNode.Spring + upperNode.Spring + lowerNode.Spring) /
                                                       (rightNode.Mass + leftNode.Mass + upperNode.Mass + lowerNode.Mass) / 4 / 4);
+                                ft = (omegaZero * omegaZero - omega * omega + new Complex(roe * omega, 1)) * Complex.Pow(Math.E, new Complex(omega * t, 1));
+                            }
 
-                            var fy = forceZero / (omegaZero * omegaZero - omega * omega + new Complex(roe * omega, 1)) * Complex.Pow(Math.E, new Complex(omega * t, 1));
+                            var fy = forceZero / ft;
                             acc.Y += fy.Real;
                         }
                     }
