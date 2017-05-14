@@ -55,7 +55,8 @@ namespace Lattice.Models
 
             this.Plate.CalcAction = () =>
             {
-                this.Plate.TayunAddAcc(25, 25, 6, 2, 2);
+                this.Plate.TayunAddAcc(25, 25, 6, 2, 0);
+                this.Plate.TayunAddAcc(25, 26, 6, -2, 0);
             };
         }
 

@@ -1,10 +1,12 @@
 ﻿using Lattice.Models.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Media.Imaging;
 
 namespace Lattice.Models.Plate
@@ -54,8 +56,13 @@ namespace Lattice.Models.Plate
             if (this.IsCalcing) return;
             this.IsCalcing = true;
 
+            var sw = new Stopwatch();
+
             while (this.IsCalcing)
             {
+                sw.Reset();
+                sw.Start();
+
                 if (this.CalcAction != null)
                 {
                     this.CalcAction();
@@ -72,8 +79,14 @@ namespace Lattice.Models.Plate
                 this.TayunCalcPos();
 
                 this.PositionUpdated?.Invoke(this, new EventArgs());
-                
-                await Task.Delay((int)(1000 * TimePerFrame));
+
+                sw.Stop();
+
+                var waitTime = (int)(1000 * TimePerFrame) - (int)sw.ElapsedMilliseconds;
+                if (waitTime > 0)
+                {
+                    await Task.Delay(waitTime);
+                }
             }
         }
         // マウス移動によって呼び出されるメソッド
