@@ -140,6 +140,13 @@ namespace Lattice
             {
                 plate.TayunAddAcc(dx / 2, dy / 2, 4, 0.5, 0);
             };
+            Task.Delay(2000).ContinueWith((task) =>
+            {
+                plate.CalcAction = () =>
+                {
+                    plate.TayunAddAcc(dx / 2, dy / 2, 4, 0.5, 0);
+                };
+            });
         }
     }
 }

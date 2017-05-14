@@ -143,24 +143,23 @@ namespace Lattice.Models.Plate
                     if (node.Amplitude.W == 0 && node.Amplitude.H == 0) continue;
 
                     // 減衰振動
-                    var dmp = node.Decay;
-                    var mass = node.Mass;
-                    var omega = Math.Sqrt(node.Spring / node.Mass);
-                    var roe = dmp / (2 * mass);
-                    var omegaDash = Math.Sqrt(omega * omega - roe * roe);
+                    var omega = node.Omega;
+                    var roe = node.Roe;
+                    var omegaDash = node.OmegaDash;
                     var amp = node.Amplitude;
                     var t = node.VibrationTime;
+                    var phase = node.Phase;
 
                     // X方向加速度
                     var acc = node.Acceleration;
                     if (!node.ConstraintX)
                     {
-                        var fx = amp.W * Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t);
+                        var fx = amp.W * Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t + phase);
                         acc.X = fx / node.Mass;
                     }
                     if (!node.ConstraintY)
                     {
-                        var fy = amp.H * Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t);
+                        var fy = amp.H * Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t + phase);
                         acc.Y = fy / node.Mass;
                     }
                     node.Acceleration = acc;
@@ -192,10 +191,8 @@ namespace Lattice.Models.Plate
                     var lowerNode = this.Items[x, y + 1];
 
                     // 強制振動
-                    var dmp = node.Decay;
-                    var mass = node.Mass;
-                    var omega = Math.Sqrt(node.Spring / node.Mass);
-                    var roe = dmp / (2 * mass);
+                    var omega = node.Omega;
+                    var roe = node.Roe;
                     var t = 0; // this.time;
 
                     // X方向加速度
@@ -307,9 +304,7 @@ namespace Lattice.Models.Plate
 
                     if (rr > dx * dx + dy * dy)
                     {
-                        var dmp = node.Decay;
-                        var mass = node.Mass;
-                        var roe = dmp / (2 * mass);
+                        var roe = node.Roe;
                         var amp = node.Amplitude;
                         var t = node.VibrationTime;
 
@@ -332,6 +327,9 @@ namespace Lattice.Models.Plate
                             amp.H = currentA + accy;
                             node.VibrationTime = 0;
                         }
+
+                        // （厳密に言うと正確ではないが）それっぽく見せるため位相を調整
+                        node.Phase += node.OmegaDash + node.VibrationTime;
 
                         node.Amplitude = amp;
                     }

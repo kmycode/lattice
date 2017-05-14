@@ -38,6 +38,11 @@ namespace Lattice.Models.Plate
         public double VibrationTime { get; set; }
 
         /// <summary>
+        /// 減衰振動の三角関数で利用する位相
+        /// </summary>
+        public double Phase { get; set; }
+
+        /// <summary>
         /// 加速度（実際には、元々の位置との差になる）
         /// </summary>
         public Point3D Acceleration { get; set; }
@@ -66,5 +71,28 @@ namespace Lattice.Models.Plate
         /// 減衰定数
         /// </summary>
         public double Decay { get; set; }
+
+        /// <summary>
+        /// 物理演算で利用するオメガ
+        /// </summary>
+        public double Omega => Math.Sqrt(this.Spring / this.Mass);
+
+        /// <summary>
+        /// 物理演算で利用する、オメガを微分したもの
+        /// </summary>
+        public double OmegaDash
+        {
+            get
+            {
+                var omega = this.Omega;
+                var roe = this.Roe;
+                return Math.Sqrt(omega * omega - roe * roe);
+            }
+        }
+
+        /// <summary>
+        /// 物理演算で利用するロー
+        /// </summary>
+        public double Roe => this.Decay / (2 * this.Mass);
     }
 }
