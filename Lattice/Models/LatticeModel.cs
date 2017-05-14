@@ -37,8 +37,8 @@ namespace Lattice.Models
 
         private void Initialize()
         {
-            int dx = 50;
-            int dy = 50;
+            int dx = 90;
+            int dy = 90;
 
             var img = new BitmapImage();
             img.BeginInit();
@@ -55,8 +55,8 @@ namespace Lattice.Models
 
             this.Plate.CalcAction = () =>
             {
-                this.Plate.TayunAddAcc(25, 25, 6, 2, 0);
-                this.Plate.TayunAddAcc(25, 26, 6, -2, 0);
+                this.Plate.TayunAddAcc(25, 90 - 25, 12, 3, 0);
+                this.Plate.TayunAddAcc(25, 90 - 26, 12, -3, 0);
             };
         }
 

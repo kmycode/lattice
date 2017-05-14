@@ -321,12 +321,20 @@ namespace Lattice.Models.Plate
             {
                 for (var y = 0; y < this.DivisionY - 1; y++)
                 {
-                    var leftTopItem = this.Items[x, y];
-                    var rightTopItem = this.Items[x + 1, y];
-                    var leftBottomItem = this.Items[x, y + 1];
-                    var rightBottomItem = this.Items[x + 1, y + 1];
-                    var sumPos = leftTopItem.Position + rightTopItem.Position + leftBottomItem.Position + rightBottomItem.Position;
-                    var pos = sumPos / 4;
+                    var leftTop = this.Items[x, y].Position;
+                    var rightTop = this.Items[x + 1, y].Position;
+                    var leftBottom = this.Items[x, y + 1].Position;
+                    var rightBottom = this.Items[x + 1, y + 1].Position;
+
+                    var pos = this.Items[x, y].LowerRightPosition;
+                    if (leftTop.Z + rightBottom.Z > rightTop.Z + leftBottom.Z)
+                    {
+                        pos = (leftTop + rightBottom) / 2;
+                    }
+                    else
+                    {
+                        pos = (rightTop + leftBottom) / 2;
+                    }
                     this.Items[x, y].LowerRightPosition = pos;
                 }
             }

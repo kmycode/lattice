@@ -8,6 +8,7 @@
         xmlns:vm="clr-namespace:Lattice.ViewModels"
         xmlns:b="clr-namespace:Lattice.Behaviors"
         mc:Ignorable="d"
+        WindowState="Maximized"
         Title="MainWindow" Height="350" Width="525">
     
     <Grid Background="Black">
