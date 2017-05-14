@@ -15,14 +15,6 @@ namespace Lattice.Models.Plate
     class MassPlate : Plate<MassNode>
     {
         /// <summary>
-        /// 運動エネルギーの最小値
-        /// </summary>
-        /// <remarks>
-        /// 微振動防止のためのパラメータ
-        /// </remarks>
-        private const double MinKinectice = 0.00000001;
-
-        /// <summary>
         /// 1フレームにかかる時間
         /// </summary>
         private const double TimePerFrame = 1.0 / 30;
@@ -161,6 +153,7 @@ namespace Lattice.Models.Plate
                 {
                     var node = this.Items[x, y];
 
+                    // 振動しない場合は無視
                     if (node.Amplitude.W == 0 && node.Amplitude.H == 0) continue;
 
                     // 減衰振動
@@ -171,9 +164,18 @@ namespace Lattice.Models.Plate
                     var t = node.VibrationTime;
                     var phase = node.Phase;
 
-                    var pow_sin = Math.Pow(Math.E, -roe * t) * Math.Sin(omegaDash * t + phase);
+                    // 振幅が十分に小さければ、振動情報を消去して以降計算しない
+                    var currentAmpBase = Math.Pow(Math.E, -roe * t);
+                    if (amp.W * currentAmpBase * amp.W * currentAmpBase + amp.H * currentAmpBase * amp.H * currentAmpBase < 0.0001)
+                    {
+                        node.Amplitude = new Size3D();
+                        node.VibrationTime = 0;
+                        continue;
+                    }
 
-                    // X方向加速度
+                    var pow_sin = currentAmpBase * Math.Sin(omegaDash * t + phase);
+
+                    // 加速度
                     var acc = node.Acceleration;
                     if (!node.ConstraintX)
                     {
@@ -221,7 +223,7 @@ namespace Lattice.Models.Plate
                     var omegaZero = Double.NaN;
                     Complex ft = default(Complex);
 
-                    // X方向加速度
+                    // 加速度
                     var acc = node.Acceleration;
                     if (!node.ConstraintX)
                     {

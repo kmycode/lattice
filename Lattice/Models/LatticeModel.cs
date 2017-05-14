@@ -52,6 +52,11 @@ namespace Lattice.Models
             };
 
             this.Plate.StartSimuration();
+
+            this.Plate.CalcAction = () =>
+            {
+                this.Plate.TayunAddAcc(25, 25, 6, 2, 2);
+            };
         }
 
         #region INotifyPropertyChanged
