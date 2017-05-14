@@ -6,7 +6,33 @@
         xmlns:local="clr-namespace:Lattice"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+    <Grid Background="Black">
+        <Viewport3D ClipToBounds="False" x:Name="Viewport">
+            <Viewport3D.Camera>
+                <OrthographicCamera Position="0.5,0.5,40" FarPlaneDistance="50"/>
+            </Viewport3D.Camera>
+            <ModelVisual3D>
+                <ModelVisual3D.Content>
+                    <AmbientLight/>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+            <ModelVisual3D x:Name="ModelVisual3D" RenderOptions.EdgeMode="Aliased">
+                <ModelVisual3D.Transform>
+                    <Transform3DGroup>
+                        <ScaleTransform3D ScaleZ="1" ScaleY="1" ScaleX="1"/>
+                        <TranslateTransform3D OffsetZ="0" OffsetX="-0.5" OffsetY="-0.5"/>
+                        <RotateTransform3D>
+                            <RotateTransform3D.Rotation>
+                                <AxisAngleRotation3D Axis="0,0,1" Angle="0"/>
+                            </RotateTransform3D.Rotation>
+                        </RotateTransform3D>
+                        <TranslateTransform3D OffsetZ="0" OffsetX="0.5" OffsetY="0.5"/>
+                    </Transform3DGroup>
+                </ModelVisual3D.Transform>
+                <ModelVisual3D.Content>
+                    <Model3DGroup x:Name="ViewportModels"/>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+        </Viewport3D>
     </Grid>
 </Window>
